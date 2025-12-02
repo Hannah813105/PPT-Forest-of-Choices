@@ -32,6 +32,12 @@ body {
   min-width: 320px;
   min-height: 100vh;
   width: 100vw;
+
+  background-image: url('/src/assets/pexels-lum3n-44775-167698.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 h1 {

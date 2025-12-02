@@ -32,7 +32,7 @@
     left: 5%;
     right: 5%;
     background-color: rgb(223, 230, 223);
-    padding: 40px 20px 60px;
+    padding: 15px 20px 40px;
     border-radius: 10px;
     box-shadow: 0 5px 10px 0.5px rgba(47, 100, 44, 0.582);
   }

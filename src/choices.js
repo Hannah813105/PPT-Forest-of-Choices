@@ -13,6 +13,13 @@ function showTextNode(textNodeIndex) {
 
   textElement.innerText = textNode.text
 
+  if (textNode.background) {
+    document.body.style.backgroundImage = textNode.background
+    document.body.style.backgroundSize = 'cover'
+    document.body.style.backgroundPosition = 'center'
+    document.body.style.backgroundRepeat = 'no-repeat'
+  }
+
   while (choicebuttonsElement.firstChild) {
     choicebuttonsElement.removeChild(choicebuttonsElement.firstChild)
   }
@@ -46,6 +53,7 @@ const textNodes = [
   {
     id: 1,
     text: 'Go into the forest',
+    background: 'url("src/assets/pexels-lum3n-44775-167698.jpg")',
     options: [
       {
         text: 'Go into the forest',
@@ -57,6 +65,7 @@ const textNodes = [
   {
     id: 2,
     text: 'You moved to node 2!',
+    background: 'url("src/assets/foggy-autumn-forest-thick-forest-fall-aesthetic-nature.jpg")',
     options: [
       {
         text: 'Trade the Goo',
