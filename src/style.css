@@ -32,12 +32,25 @@ body {
   min-width: 320px;
   min-height: 100vh;
   width: 100vw;
+}
 
-  background-image: url('/src/assets/pexels-lum3n-44775-167698.jpg');
+#background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-attachment: fixed;
+
+  transition: opacity 0.8s ease-in-out;
+  z-index: -1;
+  opacity: 1;
+}
+
+#background.fade-out {
+  opacity: 0;
 }
 
 h1 {

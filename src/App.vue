@@ -3,6 +3,7 @@
 </script>
 
 <template>
+  <div id="background"></div>
   <h1 id="title">
     Forest of Choices
   </h1>
