@@ -1,4 +1,5 @@
 <script setup>
+import Character from './components/character.vue';
 
 </script>
 
@@ -7,6 +8,7 @@
   <h1 id="title">
     Forest of Choices
   </h1>
+  <Character />
   <div class="container">
     <div id="text">Text</div>
     <div id="choice-buttons" class="button-grid">

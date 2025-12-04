@@ -23,6 +23,11 @@ function showTextNode(textNodeIndex) {
 
   textElement.innerText = textNode.text
 
+  // Reset character whenever the text node changes
+  if (window.characterComponent) {
+    window.characterComponent.resetCharacter()
+  }
+
   if (textNode.background) {
     changeBackground(textNode.background)
   }
@@ -30,6 +35,7 @@ function showTextNode(textNodeIndex) {
   while (choicebuttonsElement.firstChild) {
     choicebuttonsElement.removeChild(choicebuttonsElement.firstChild)
   }
+
   const options = textNode.options || []
 
   options.forEach(option => {
@@ -55,7 +61,6 @@ function selectOption(option) {
   state = Object.assign(state, option.setState)
   showTextNode(nextTextNodeId)
 }
-
 
 import forestImg from './assets/pexels-lum3n-44775-167698.jpg'
 import foggyImg from './assets/foggy-autumn-forest-thick-forest-fall-aesthetic-nature.jpg'
@@ -138,7 +143,7 @@ const textNodes = [
   },
   {
     id: 6,
-    text: 'he trees grow darker. Suddenly, a hidden trap door opens beneath your feet!You find yourslef in an undergroud cave',
+    text: 'he trees grow darker. Suddenly, a hidden trap door opens beneath your feet! You find yourself in an undergroud cave.',
     background: foggyImg,
     options: [
       {
