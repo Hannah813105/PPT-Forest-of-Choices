@@ -19,34 +19,35 @@ function changeBackground(url) {
 }
 
 function showTextNode(textNodeIndex) {
-  const textNode = textNodes.find(t => t.id === textNodeIndex)
+  const textNode = textNodes.find(t => t.id === textNodeIndex);
 
-  textElement.innerText = textNode.text
+  textElement.innerText = textNode.text;
 
-  // Reset character whenever the text node changes
+  // Reset character
   if (window.characterComponent) {
-    window.characterComponent.resetCharacter()
+    window.characterComponent.resetCharacter();
+    // Add coins if defined for this textNode
+    if (textNode.coins) {
+      window.characterComponent.setCoins(textNode.coins);
+    }
   }
 
-  if (textNode.background) {
-    changeBackground(textNode.background)
-  }
+  if (textNode.background) { changeBackground(textNode.background); }
 
   while (choicebuttonsElement.firstChild) {
-    choicebuttonsElement.removeChild(choicebuttonsElement.firstChild)
+    choicebuttonsElement.removeChild(choicebuttonsElement.firstChild);
   }
 
-  const options = textNode.options || []
-
+  const options = textNode.options || [];
   options.forEach(option => {
     if (showOption(option)) {
-      const button = document.createElement('button')
-      button.innerText = option.text
-      button.classList.add('button')
-      button.addEventListener('click', () => selectOption(option))
-      choicebuttonsElement.appendChild(button)
+      const button = document.createElement('button');
+      button.innerText = option.text;
+      button.classList.add('button');
+      button.addEventListener('click', () => selectOption(option));
+      choicebuttonsElement.appendChild(button);
     }
-  })
+  });
 }
 
 function showOption(option) {
@@ -70,6 +71,10 @@ const textNodes = [
     id: 1,
     text: '',
     background: forestImg,
+    coins: [
+      { x: 300, y: 0 },
+      { x: 500, y: 0 }
+    ],
     options: [
       {
         text: 'Start your Journey',
