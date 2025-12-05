@@ -4,26 +4,41 @@ import Character from './components/character.vue';
 </script>
 
 <template>
-  <div id="background"></div>
-  <h1 id="title">
-    Forest of Choices
-  </h1>
-  <Character />
-  <div class="container">
-    <div id="text">Text</div>
-    <div id="choice-buttons" class="button-grid">
-      <button class="button">option 1</button>
-      <button class="button">option 2</button>
-      <button class="button">option 3</button>
-      <button class="button">option 4</button>
+  <section id="foc">
+    <div id="background"></div>
+    <h1 id="title">
+      Forest of Choices
+    </h1>
+    <Character />
+    <div class="container">
+      <div id="text">Text</div>
+      <div id="choice-buttons" class="button-grid">
+        <button class="button">option 1</button>
+        <button class="button">option 2</button>
+        <button class="button">option 3</button>
+        <button class="button">option 4</button>
+      </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <style scoped>
+#foc {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-image: url('./assets/pexels-lum3n-44775-167698.jpg');
+  background-size: cover;  
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
   #title {
   position: fixed;
   font-size: 32px;
+  color: white;
   text-align: left;
   top: 10px;
   left: 5%;

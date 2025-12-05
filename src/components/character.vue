@@ -1,6 +1,10 @@
 <template>
   <div class="game-container">
-    <div ref="gameArea" class="game-area">
+    <div
+      ref="gameArea"
+      class="game-area"
+      :style="{ backgroundImage: backgroundImage ? 'url(' + backgroundImage + ')' : '' }"
+    >
       <!-- Score -->
       <div class="score">Score: {{ score }}</div>
 
@@ -43,8 +47,6 @@ import MarioSprite from '../assets/Mario-Sprite.png';
 import CoinImg from '../assets/coin.png';
 
 let floatingId = 0;
-
-// Original design dimensions
 const DESIGN_WIDTH = 1800;
 const DESIGN_HEIGHT = 500;
 
@@ -67,7 +69,9 @@ export default {
       coins: [],
       coinImg: CoinImg,
       score: 0,
-      floatingScores: []
+      floatingScores: [],
+
+      backgroundImage: '' // new reactive property
     };
   },
 
@@ -92,7 +96,7 @@ export default {
     window.addEventListener("keyup", this.handleKeyUp);
     window.addEventListener("resize", this.updateGameAreaSize);
     this.gameLoop();
-    window.characterComponent = this;
+    window.characterComponent = this; // global reference
   },
 
   beforeUnmount() {
@@ -130,7 +134,7 @@ export default {
 
     gameLoop() {
       setInterval(() => {
-        const moveAmount = 5 * this.scaleX;
+        const moveAmount = 10 * this.scaleX;
 
         if (this.keysPressed["a"]) { this.x -= moveAmount; this.facing = 'left'; }
         if (this.keysPressed["d"]) { this.x += moveAmount; this.facing = 'right'; }
@@ -157,6 +161,14 @@ export default {
       this.coins = [];
     },
 
+    setCoins(coinArray) {
+      this.coins = coinArray || [];
+    },
+
+    setBackground(imgUrl) {
+      this.backgroundImage = imgUrl || '';
+    },
+
     checkCoinCollision() {
       this.coins = this.coins.filter(coin => {
         const charLeft = this.x;
@@ -178,10 +190,6 @@ export default {
         }
         return true;
       });
-    },
-
-    setCoins(coinArray) {
-      this.coins = coinArray;
     },
 
     addFloatingScore(x, y) {
@@ -230,7 +238,10 @@ html, body {
   min-width: 300px;
   min-height: 200px;
   overflow: hidden;
-  background: lightblue;
+  background-size: cover;
+  background-position: center;
+  background-color: lightblue;
+  transition: background-image 0.4s ease;
 }
 
 .character {

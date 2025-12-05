@@ -20,26 +20,30 @@ function changeBackground(url) {
 
 function showTextNode(textNodeIndex) {
   const textNode = textNodes.find(t => t.id === textNodeIndex);
-
   textElement.innerText = textNode.text;
 
-  // Reset character
   if (window.characterComponent) {
+    // Reset character
     window.characterComponent.resetCharacter();
-    // Add coins if defined for this textNode
+
+    // Set coins for this textNode
     if (textNode.coins) {
       window.characterComponent.setCoins(textNode.coins);
     }
+
+    // Set background image for this textNode
+    if (textNode.background) {
+      window.characterComponent.setBackground(textNode.background);
+    }
   }
 
-  if (textNode.background) { changeBackground(textNode.background); }
-
+  // Clear existing choice buttons
   while (choicebuttonsElement.firstChild) {
     choicebuttonsElement.removeChild(choicebuttonsElement.firstChild);
   }
 
-  const options = textNode.options || [];
-  options.forEach(option => {
+  // Add new choice buttons
+  (textNode.options || []).forEach(option => {
     if (showOption(option)) {
       const button = document.createElement('button');
       button.innerText = option.text;
