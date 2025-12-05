@@ -1,34 +1,40 @@
 <template>
-  <div ref="gameArea" class="game-area">
-    <!-- Score -->
-    <div class="score">Score: {{ score }}</div>
+  <div class="game-container">
+    <div ref="gameArea" class="game-area">
+      <!-- Score -->
+      <div class="score">Score: {{ score }}</div>
 
-    <!-- Floating coin animations -->
-    <div
-      v-for="(anim, index) in floatingScores"
-      :key="anim.id"
-      class="floating-score"
-      :style="{ left: anim.x + 'px', bottom: anim.y + 'px', opacity: anim.opacity }"
-    >
-      +1
+      <!-- Floating coin animations -->
+      <div
+        v-for="(anim, index) in floatingScores"
+        :key="anim.id"
+        class="floating-score"
+        :style="{ left: anim.x + 'px', bottom: anim.y + 'px', opacity: anim.opacity }"
+      >
+        +1
+      </div>
+
+      <!-- Character -->
+      <img
+        :src="characterImg"
+        ref="character"
+        class="character"
+        :style="{
+          left: scaledX + 'px',
+          bottom: scaledY + 'px',
+          transform: facing === 'left' ? 'scaleX(-1)' : 'scaleX(1)'
+        }"
+      />
+
+      <!-- Coins -->
+      <img
+        v-for="(coin, index) in coins"
+        :key="index"
+        :src="coinImg"
+        class="coin"
+        :style="{ left: scalePosX(coin.x) + 'px', bottom: scalePosY(coin.y) + 'px' }"
+      />
     </div>
-
-    <!-- Character -->
-    <img
-      :src="characterImg"
-      ref="character"
-      class="character"
-      :style="{ left: x + 'px', bottom: y + 'px', transform: facing === 'left' ? 'scaleX(-1)' : 'scaleX(1)' }"
-    />
-
-    <!-- Coins -->
-    <img
-      v-for="(coin, index) in coins"
-      :key="index"
-      :src="coinImg"
-      class="coin"
-      :style="{ left: coin.x + 'px', bottom: coin.y + 'px' }"
-    />
   </div>
 </template>
 
@@ -37,6 +43,10 @@ import MarioSprite from '../assets/Mario-Sprite.png';
 import CoinImg from '../assets/coin.png';
 
 let floatingId = 0;
+
+// Original design dimensions
+const DESIGN_WIDTH = 1800;
+const DESIGN_HEIGHT = 500;
 
 export default {
   data() {
@@ -47,7 +57,9 @@ export default {
       gravity: 1,
       isJumping: false,
       gameAreaWidth: 0,
+      gameAreaHeight: 0,
       characterWidth: 0,
+      characterHeight: 100,
       characterImg: MarioSprite,
       keysPressed: {},
       facing: 'right',
@@ -55,24 +67,53 @@ export default {
       coins: [],
       coinImg: CoinImg,
       score: 0,
-
-      floatingScores: [] // array for floating +1 animations
+      floatingScores: []
     };
   },
 
+  computed: {
+    scaleX() {
+      return this.gameAreaWidth / DESIGN_WIDTH;
+    },
+    scaleY() {
+      return this.gameAreaHeight / DESIGN_HEIGHT;
+    },
+    scaledX() {
+      return this.x * this.scaleX;
+    },
+    scaledY() {
+      return this.y * this.scaleY;
+    }
+  },
+
   mounted() {
-    this.updateGameAreaWidth();
+    this.updateGameAreaSize();
     window.addEventListener("keydown", this.handleKeyDown);
     window.addEventListener("keyup", this.handleKeyUp);
-    window.addEventListener("resize", this.updateGameAreaWidth);
+    window.addEventListener("resize", this.updateGameAreaSize);
     this.gameLoop();
     window.characterComponent = this;
   },
 
+  beforeUnmount() {
+    window.removeEventListener("keydown", this.handleKeyDown);
+    window.removeEventListener("keyup", this.handleKeyUp);
+    window.removeEventListener("resize", this.updateGameAreaSize);
+  },
+
   methods: {
-    updateGameAreaWidth() {
-      this.gameAreaWidth = this.$refs.gameArea.getBoundingClientRect().width;
-      this.characterWidth = this.$refs.character.getBoundingClientRect().width;
+    updateGameAreaSize() {
+      const rect = this.$refs.gameArea.getBoundingClientRect();
+      this.gameAreaWidth = rect.width;
+      this.gameAreaHeight = rect.height;
+      this.characterWidth = rect.width * (100 / DESIGN_WIDTH);
+    },
+
+    scalePosX(x) {
+      return x * this.scaleX;
+    },
+    scalePosY(y) {
+      return y * this.scaleY;
     },
 
     handleKeyDown(e) {
@@ -89,12 +130,12 @@ export default {
 
     gameLoop() {
       setInterval(() => {
-        const moveAmount = 5;
+        const moveAmount = 5 * this.scaleX;
 
         if (this.keysPressed["a"]) { this.x -= moveAmount; this.facing = 'left'; }
         if (this.keysPressed["d"]) { this.x += moveAmount; this.facing = 'right'; }
 
-        this.x = Math.max(0, Math.min(this.x, this.gameAreaWidth - this.characterWidth));
+        this.x = Math.max(0, Math.min(this.x, DESIGN_WIDTH - this.characterWidth / this.scaleX));
 
         if (this.isJumping) {
           this.y += this.velocityY;
@@ -119,9 +160,9 @@ export default {
     checkCoinCollision() {
       this.coins = this.coins.filter(coin => {
         const charLeft = this.x;
-        const charRight = this.x + this.characterWidth;
+        const charRight = this.x + this.characterWidth / this.scaleX;
         const charBottom = this.y;
-        const charTop = this.y + 100;
+        const charTop = this.y + this.characterHeight;
 
         const coinLeft = coin.x;
         const coinRight = coin.x + 30;
@@ -133,7 +174,7 @@ export default {
         if (overlap) {
           this.score += 1;
           this.addFloatingScore(coin.x, coin.y);
-          return false; // remove coin
+          return false;
         }
         return true;
       });
@@ -149,26 +190,46 @@ export default {
     },
 
     updateFloatingScores() {
-      // Animate floating +1
       this.floatingScores = this.floatingScores.map(fs => {
-        fs.y += 1;        // move up
-        fs.opacity -= 0.02; // fade out
+        fs.y += 1;
+        fs.opacity -= 0.02;
         fs.frame++;
         return fs;
-      }).filter(fs => fs.opacity > 0); // remove after fade out
+      }).filter(fs => fs.opacity > 0);
     }
   }
 };
 </script>
 
 <style>
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.game-container {
+  display: flex;
+  position: absolute;
+  left: 0;
+  top: 0;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+}
+
 .game-area {
   position: relative;
+  top: -60px;
   width: 100%;
   max-width: 1800px;
-  height: 500px;
+  height: 50vw;
+  max-height: 500px;
+  min-width: 300px;
+  min-height: 200px;
   overflow: hidden;
-  margin: 0 auto;
   background: lightblue;
 }
 
@@ -188,7 +249,7 @@ export default {
   position: absolute;
   top: 10px;
   right: 20px;
-  font-size: 24px;
+  font-size: 2vw;
   font-weight: bold;
   color: black;
   z-index: 1000;
@@ -196,7 +257,7 @@ export default {
 
 .floating-score {
   position: absolute;
-  font-size: 20px;
+  font-size: 1.5vw;
   font-weight: bold;
   color: white;
   text-shadow: 1px 1px 2px gray;
