@@ -29,7 +29,7 @@ import Character from './components/character.vue';
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-image: url('./assets/pexels-lum3n-44775-167698.jpg');
+  background-image: url('./assets/foggy-autumn-forest-thick-forest-fall-aesthetic-nature.jpg');
   background-size: cover;  
   background-position: center;
   background-repeat: no-repeat;
