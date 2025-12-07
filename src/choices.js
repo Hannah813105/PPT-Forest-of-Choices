@@ -470,7 +470,7 @@ const textNodes = [
   },
   {
     id: 28,
-    text: 'The world narrows around you, walls of the forest closing in. No matter how you struggle or call for help, the path out seems to vanish. Slowly, you realize the place has claimed you—you are trapped, and there is no escape.',
+    text: 'The world narrows around you, walls of the forest closing in. No matter how you struggle or call for help, the path out seems to vanish. Slowly, you realize the place has claimed you. You are trapped, and there is no escape.',
     options: [
       {
         text: 'Restart',
