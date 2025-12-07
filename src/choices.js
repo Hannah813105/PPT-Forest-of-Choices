@@ -497,6 +497,16 @@ const textNodes = [
         nextText: -1
       }
     ]
+  },
+  {
+    id: 31,
+    text: 'You fall into a cold and winding river. When getting up you notice that you are mostly unharmed',
+    options: [
+      {
+        text: 'Investigate the winding river',
+        nextText: 20
+      }
+    ]
   }
 ]
 
