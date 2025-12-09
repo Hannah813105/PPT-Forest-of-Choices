@@ -1,10 +1,6 @@
 <template>
   <div class="game-container">
-    <div
-      ref="gameArea"
-      class="game-area"
-      :style="{ backgroundImage: backgroundImage ? 'url(' + backgroundImage + ')' : '' }"
-    >
+    <div ref="gameArea" class="game-area" :style="{ backgroundImage: `url(${backgroundImg})` }">
       <!-- Score -->
       <div class="score">Score: {{ score }}</div>
 
@@ -60,7 +56,7 @@ export default {
       isJumping: false,
       gameAreaWidth: 0,
       gameAreaHeight: 0,
-      characterWidth: 0,
+      characterWidth: 100,
       characterHeight: 100,
       characterImg: MarioSprite,
       keysPressed: {},
@@ -70,24 +66,16 @@ export default {
       coinImg: CoinImg,
       score: 0,
       floatingScores: [],
-
-      backgroundImage: '' // new reactive property
+      allCoinsCollected: true,
+      backgroundImg: ''
     };
   },
 
   computed: {
-    scaleX() {
-      return this.gameAreaWidth / DESIGN_WIDTH;
-    },
-    scaleY() {
-      return this.gameAreaHeight / DESIGN_HEIGHT;
-    },
-    scaledX() {
-      return this.x * this.scaleX;
-    },
-    scaledY() {
-      return this.y * this.scaleY;
-    }
+    scaleX() { return this.gameAreaWidth / DESIGN_WIDTH; },
+    scaleY() { return this.gameAreaHeight / DESIGN_HEIGHT; },
+    scaledX() { return this.x * this.scaleX; },
+    scaledY() { return this.y * this.scaleY; }
   },
 
   mounted() {
@@ -96,7 +84,7 @@ export default {
     window.addEventListener("keyup", this.handleKeyUp);
     window.addEventListener("resize", this.updateGameAreaSize);
     this.gameLoop();
-    window.characterComponent = this; // global reference
+    window.characterComponent = this;
   },
 
   beforeUnmount() {
@@ -110,15 +98,10 @@ export default {
       const rect = this.$refs.gameArea.getBoundingClientRect();
       this.gameAreaWidth = rect.width;
       this.gameAreaHeight = rect.height;
-      this.characterWidth = rect.width * (100 / DESIGN_WIDTH);
     },
 
-    scalePosX(x) {
-      return x * this.scaleX;
-    },
-    scalePosY(y) {
-      return y * this.scaleY;
-    },
+    scalePosX(x) { return x * this.scaleX; },
+    scalePosY(y) { return y * this.scaleY; },
 
     handleKeyDown(e) {
       this.keysPressed[e.key] = true;
@@ -128,18 +111,15 @@ export default {
       }
     },
 
-    handleKeyUp(e) {
-      this.keysPressed[e.key] = false;
-    },
+    handleKeyUp(e) { this.keysPressed[e.key] = false; },
 
     gameLoop() {
       setInterval(() => {
         const moveAmount = 10 * this.scaleX;
-
         if (this.keysPressed["a"]) { this.x -= moveAmount; this.facing = 'left'; }
         if (this.keysPressed["d"]) { this.x += moveAmount; this.facing = 'right'; }
 
-        this.x = Math.max(0, Math.min(this.x, DESIGN_WIDTH - this.characterWidth / this.scaleX));
+        this.x = Math.max(0, Math.min(this.x, DESIGN_WIDTH - this.characterWidth));
 
         if (this.isJumping) {
           this.y += this.velocityY;
@@ -152,27 +132,24 @@ export default {
       }, 16);
     },
 
-    resetCharacter() {
+    resetCharacter(coins = []) {
       this.x = 100;
       this.y = 0;
       this.velocityY = 0;
       this.isJumping = false;
       this.facing = 'right';
-      this.coins = [];
-    },
-
-    setCoins(coinArray) {
-      this.coins = coinArray || [];
-    },
-
-    setBackground(imgUrl) {
-      this.backgroundImage = imgUrl || '';
+      this.coins = coins;
+      this.allCoinsCollected = coins.length === 0;
     },
 
     checkCoinCollision() {
+      if (!this.coins.length) {
+        this.allCoinsCollected = true;
+        return;
+      }
       this.coins = this.coins.filter(coin => {
         const charLeft = this.x;
-        const charRight = this.x + this.characterWidth / this.scaleX;
+        const charRight = this.x + this.characterWidth;
         const charBottom = this.y;
         const charTop = this.y + this.characterHeight;
 
@@ -190,6 +167,13 @@ export default {
         }
         return true;
       });
+
+      if (this.coins.length === 0) this.allCoinsCollected = true;
+    },
+
+    setCoins(coinArray) {
+      this.coins = coinArray;
+      this.allCoinsCollected = coinArray.length === 0;
     },
 
     addFloatingScore(x, y) {
@@ -201,22 +185,18 @@ export default {
       this.floatingScores = this.floatingScores.map(fs => {
         fs.y += 1;
         fs.opacity -= 0.02;
-        fs.frame++;
         return fs;
       }).filter(fs => fs.opacity > 0);
+    },
+
+    setBackground(url) {
+      this.backgroundImg = url;
     }
   }
 };
 </script>
 
-<style>
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-}
-
+<style scoped>
 .game-container {
   display: flex;
   position: absolute;
@@ -240,38 +220,10 @@ html, body {
   overflow: hidden;
   background-size: cover;
   background-position: center;
-  background-color: lightblue;
-  transition: background-image 0.4s ease;
 }
 
-.character {
-  position: absolute;
-  width: 100px;
-  transition: transform 0.1s;
-}
-
-.coin {
-  position: absolute;
-  width: 30px;
-  transition: transform 0.1s;
-}
-
-.score {
-  position: absolute;
-  top: 10px;
-  right: 20px;
-  font-size: 2vw;
-  font-weight: bold;
-  color: black;
-  z-index: 1000;
-}
-
-.floating-score {
-  position: absolute;
-  font-size: 1.5vw;
-  font-weight: bold;
-  color: white;
-  text-shadow: 1px 1px 2px gray;
-  pointer-events: none;
-}
+.character { position: absolute; width: 100px; transition: transform 0.1s; }
+.coin { position: absolute; width: 30px; transition: transform 0.1s; }
+.score { position: absolute; top: 10px; right: 20px; font-size: 2vw; font-weight: bold; color: black; z-index: 1000; }
+.floating-score { position: absolute; font-size: 1.5vw; font-weight: bold; color: white; text-shadow: 1px 1px 2px gray; pointer-events: none; }
 </style>

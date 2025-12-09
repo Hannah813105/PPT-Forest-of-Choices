@@ -1,49 +1,52 @@
-const textElement = document.getElementById('text')
-const choicebuttonsElement = document.getElementById('choice-buttons')
+const textElement = document.getElementById('text');
+const choicebuttonsElement = document.getElementById('choice-buttons');
 
-let state = {}
+let state = {};
 
-function startGame () {
-  state = {}
-  showTextNode(1)
+function startGame() {
+  state = {};
+  showTextNode(1);
 }
 
 function changeBackground(url) {
-  const bg = document.getElementById('background')
-  bg.classList.add('fade-out')
-
-  setTimeout(() => {
-    bg.style.backgroundImage = `url(${url})`
-    bg.classList.remove('fade-out')
-  }, 400)
+  if (window.characterComponent) {
+    window.characterComponent.setBackground(url);
+  }
 }
 
 function showTextNode(textNodeIndex) {
   const textNode = textNodes.find(t => t.id === textNodeIndex);
   textElement.innerText = textNode.text;
 
+  const container = document.querySelector('.container');
+
+  // Reset character and coins
   if (window.characterComponent) {
-    // Reset character
-    window.characterComponent.resetCharacter();
-
-    // Set coins for this textNode
-    if (textNode.coins) {
-      window.characterComponent.setCoins(textNode.coins);
-    }
-
-    // Set background image for this textNode
-    if (textNode.background) {
-      window.characterComponent.setBackground(textNode.background);
-    }
+    const coins = textNode.coins || [];
+    window.characterComponent.resetCharacter(coins);
   }
 
-  // Clear existing choice buttons
-  while (choicebuttonsElement.firstChild) {
-    choicebuttonsElement.removeChild(choicebuttonsElement.firstChild);
+  // Hide container until all coins are collected
+  if (textNode.coins && textNode.coins.length > 0) {
+    container.style.display = 'none';
+    const interval = setInterval(() => {
+      if (window.characterComponent.allCoinsCollected) {
+        container.style.display = 'block';
+        clearInterval(interval);
+      }
+    }, 100);
+  } else {
+    container.style.display = 'block';
   }
 
-  // Add new choice buttons
-  (textNode.options || []).forEach(option => {
+  // Change background
+  if (textNode.background) changeBackground(textNode.background);
+
+  // Render options
+  while (choicebuttonsElement.firstChild) choicebuttonsElement.removeChild(choicebuttonsElement.firstChild);
+
+  const options = textNode.options || [];
+  options.forEach(option => {
     if (showOption(option)) {
       const button = document.createElement('button');
       button.innerText = option.text;
@@ -55,20 +58,20 @@ function showTextNode(textNodeIndex) {
 }
 
 function showOption(option) {
-  return option.requiredState == null || option.requiredState(state)
+  return option.requiredState == null || option.requiredState(state);
 }
 
 function selectOption(option) {
-  const nextTextNodeId = option.nextText
-  if (nextTextNodeId <= 0) {
-    return startGame()
-  }
-  state = Object.assign(state, option.setState)
-  showTextNode(nextTextNodeId)
+  const nextTextNodeId = option.nextText;
+  if (nextTextNodeId <= 0) return startGame();
+  state = Object.assign(state, option.setState);
+  showTextNode(nextTextNodeId);
 }
 
-import forestImg from './assets/pexels-lum3n-44775-167698.jpg'
-import foggyImg from './assets/foggy-autumn-forest-thick-forest-fall-aesthetic-nature.jpg'
+// Example textNodes
+import forestImg from './assets/pexels-lum3n-44775-167698.jpg';
+import foggyImg from './assets/foggy-autumn-forest-thick-forest-fall-aesthetic-nature.jpg';
+import coinImg from './assets/coin.png';
 
 const textNodes = [
   {
