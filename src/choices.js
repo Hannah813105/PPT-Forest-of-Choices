@@ -68,7 +68,7 @@ function selectOption(option) {
   showTextNode(nextTextNodeId);
 }
 
-// Example textNodes
+// images for textNodes
 import forestImg from './assets/pexels-lum3n-44775-167698.jpg';
 import foggyImg from './assets/foggy-autumn-forest-thick-forest-fall-aesthetic-nature.jpg';
 import coinImg from './assets/coin.png';
@@ -79,8 +79,8 @@ const textNodes = [
     text: '',
     background: forestImg,
     coins: [
-      { x: 300, y: 0 },
-      { x: 500, y: 0 }
+      { x: 300, y: 400 },
+      { x: 500, y: 60 }
     ],
     options: [
       {

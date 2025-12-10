@@ -162,8 +162,8 @@ gameLoop() {
 
     // RESET for new scenes
     resetCharacter(coins = []) {
-      this.x = 100;
-      this.y = 0;
+      this.x = 800;
+      this.y = 20;
       this.velocityY = 0;
       this.isJumping = false;
       this.facing = "right";
@@ -286,6 +286,7 @@ gameLoop() {
   top: 10px; 
   right: 20px; 
   font-size: 2vw; 
+  font-weight: 600;
   color: black; 
 }
 
