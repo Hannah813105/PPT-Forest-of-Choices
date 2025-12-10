@@ -1,10 +1,14 @@
 <template>
   <div class="game-container">
-    <div ref="gameArea" class="game-area" :style="{ backgroundImage: `url(${backgroundImg})` }">
+    <div
+      ref="gameArea"
+      class="game-area"
+      :style="{ backgroundImage: `url(${backgroundImg})` }"
+    >
       <!-- Score -->
       <div class="score">Score: {{ score }}</div>
 
-      <!-- Floating coin animations -->
+      <!-- Floating +1 animations -->
       <div
         v-for="(anim, index) in floatingScores"
         :key="anim.id"
@@ -32,7 +36,10 @@
         :key="index"
         :src="coinImg"
         class="coin"
-        :style="{ left: scalePosX(coin.x) + 'px', bottom: scalePosY(coin.y) + 'px' }"
+        :style="{
+          left: scalePosX(coin.x) + 'px',
+          bottom: scalePosY(coin.y) + 'px'
+        }"
       />
     </div>
   </div>
@@ -54,36 +61,53 @@ export default {
       velocityY: 0,
       gravity: 1,
       isJumping: false,
+      keysPressed: {},
+      facing: "right",
+
+      // Scaling
       gameAreaWidth: 0,
       gameAreaHeight: 0,
       characterWidth: 100,
       characterHeight: 100,
-      characterImg: MarioSprite,
-      keysPressed: {},
-      facing: 'right',
 
-      coins: [],
+      // Assets
+      characterImg: MarioSprite,
       coinImg: CoinImg,
+      backgroundImg: "",
+
+      // Coins
+      coins: [],
       score: 0,
       floatingScores: [],
-      allCoinsCollected: true,
-      backgroundImg: ''
+      allCoinsCollected: true
     };
   },
 
   computed: {
-    scaleX() { return this.gameAreaWidth / DESIGN_WIDTH; },
-    scaleY() { return this.gameAreaHeight / DESIGN_HEIGHT; },
-    scaledX() { return this.x * this.scaleX; },
-    scaledY() { return this.y * this.scaleY; }
+    scaleX() {
+      return this.gameAreaWidth / DESIGN_WIDTH;
+    },
+    scaleY() {
+      return this.gameAreaHeight / DESIGN_HEIGHT;
+    },
+    scaledX() {
+      return this.x * this.scaleX;
+    },
+    scaledY() {
+      return this.y * this.scaleY;
+    }
   },
 
   mounted() {
     this.updateGameAreaSize();
+
     window.addEventListener("keydown", this.handleKeyDown);
     window.addEventListener("keyup", this.handleKeyUp);
     window.addEventListener("resize", this.updateGameAreaSize);
+
     this.gameLoop();
+
+    // Allow choices.js to talk to this component
     window.characterComponent = this;
   },
 
@@ -100,75 +124,91 @@ export default {
       this.gameAreaHeight = rect.height;
     },
 
-    scalePosX(x) { return x * this.scaleX; },
-    scalePosY(y) { return y * this.scaleY; },
-
-    handleKeyDown(e) {
-      this.keysPressed[e.key] = true;
-      if (e.key === "w" && !this.isJumping) {
-        this.isJumping = true;
-        this.velocityY = 18;
-      }
+    scalePosX(x) {
+      return x * this.scaleX;
+    },
+    scalePosY(y) {
+      return y * this.scaleY;
     },
 
-    handleKeyUp(e) { this.keysPressed[e.key] = false; },
+handleKeyDown(e) {
+  this.keysPressed[e.key] = true;
+},
 
-    gameLoop() {
-      setInterval(() => {
-        const moveAmount = 10 * this.scaleX;
-        if (this.keysPressed["a"]) { this.x -= moveAmount; this.facing = 'left'; }
-        if (this.keysPressed["d"]) { this.x += moveAmount; this.facing = 'right'; }
+handleKeyUp(e) {
+  this.keysPressed[e.key] = false;
+},
 
-        this.x = Math.max(0, Math.min(this.x, DESIGN_WIDTH - this.characterWidth));
+gameLoop() {
+  setInterval(() => {
+    const moveAmount = 10;
 
-        if (this.isJumping) {
-          this.y += this.velocityY;
-          this.velocityY -= this.gravity;
-          if (this.y <= 0) { this.y = 0; this.isJumping = false; this.velocityY = 0; }
-        }
+    // Horizontal movement
+    if (this.keysPressed["a"]) { this.x -= moveAmount; this.facing = "left"; }
+    if (this.keysPressed["d"]) { this.x += moveAmount; this.facing = "right"; }
 
-        this.checkCoinCollision();
-        this.updateFloatingScores();
-      }, 16);
-    },
+    // Vertical movement
+    if (this.keysPressed["w"]) { this.y += moveAmount; }
+    if (this.keysPressed["s"]) { this.y -= moveAmount; }
 
+    // Keep character within game area
+    this.x = Math.max(0, Math.min(this.x, DESIGN_WIDTH - this.characterWidth));
+    this.y = Math.max(0, Math.min(this.y, DESIGN_HEIGHT - this.characterHeight));
+
+    this.checkCoinCollision();
+    this.updateFloatingScores();
+  }, 16);
+},
+
+    // RESET for new scenes
     resetCharacter(coins = []) {
       this.x = 100;
       this.y = 0;
       this.velocityY = 0;
       this.isJumping = false;
-      this.facing = 'right';
-      this.coins = coins;
-      this.allCoinsCollected = coins.length === 0;
+      this.facing = "right";
+
+      this.setCoins(coins);
     },
 
+    // REQUIRED FIX — updates allCoinsCollected correctly
     checkCoinCollision() {
       if (!this.coins.length) {
         this.allCoinsCollected = true;
         return;
       }
-      this.coins = this.coins.filter(coin => {
-        const charLeft = this.x;
-        const charRight = this.x + this.characterWidth;
-        const charBottom = this.y;
-        const charTop = this.y + this.characterHeight;
 
-        const coinLeft = coin.x;
-        const coinRight = coin.x + 30;
-        const coinBottom = coin.y;
-        const coinTop = coin.y + 30;
+      let collectedAny = false;
 
-        const overlap = !(charRight < coinLeft || charLeft > coinRight || charTop < coinBottom || charBottom > coinTop);
+      this.coins = this.coins.filter((coin) => {
+        const charL = this.x;
+        const charR = this.x + this.characterWidth;
+        const charB = this.y;
+        const charT = this.y + this.characterHeight;
+
+        const coinL = coin.x;
+        const coinR = coin.x + 30;
+        const coinB = coin.y;
+        const coinT = coin.y + 30;
+
+        const overlap = !(
+          charR < coinL ||
+          charL > coinR ||
+          charT < coinB ||
+          charB > coinT
+        );
 
         if (overlap) {
-          this.score += 1;
+          collectedAny = true;
+          this.score++;
           this.addFloatingScore(coin.x, coin.y);
           return false;
         }
         return true;
       });
 
-      if (this.coins.length === 0) this.allCoinsCollected = true;
+      // IMPORTANT FIX:
+      this.allCoinsCollected = this.coins.length === 0;
     },
 
     setCoins(coinArray) {
@@ -178,15 +218,23 @@ export default {
 
     addFloatingScore(x, y) {
       const id = floatingId++;
-      this.floatingScores.push({ id, x, y, opacity: 1, frame: 0 });
+      this.floatingScores.push({
+        id,
+        x,
+        y,
+        opacity: 1,
+        frame: 0
+      });
     },
 
     updateFloatingScores() {
-      this.floatingScores = this.floatingScores.map(fs => {
-        fs.y += 1;
-        fs.opacity -= 0.02;
-        return fs;
-      }).filter(fs => fs.opacity > 0);
+      this.floatingScores = this.floatingScores
+        .map((fs) => {
+          fs.y += 1;
+          fs.opacity -= 0.02;
+          return fs;
+        })
+        .filter((fs) => fs.opacity > 0);
     },
 
     setBackground(url) {
@@ -220,10 +268,30 @@ export default {
   overflow: hidden;
   background-size: cover;
   background-position: center;
+  overflow: hidden;
 }
 
-.character { position: absolute; width: 100px; transition: transform 0.1s; }
-.coin { position: absolute; width: 30px; transition: transform 0.1s; }
-.score { position: absolute; top: 10px; right: 20px; font-size: 2vw; font-weight: bold; color: black; z-index: 1000; }
-.floating-score { position: absolute; font-size: 1.5vw; font-weight: bold; color: white; text-shadow: 1px 1px 2px gray; pointer-events: none; }
+.character { 
+  position: absolute; 
+  width: 100px; 
+}
+
+.coin { 
+  position: absolute; 
+  width: 30px; 
+}
+
+.score { 
+  position: absolute; 
+  top: 10px; 
+  right: 20px; 
+  font-size: 2vw; 
+  color: black; 
+}
+
+.floating-score { 
+  position: absolute; 
+  font-size: 1.5vw; 
+  color: white; 
+}
 </style>
