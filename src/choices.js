@@ -3,15 +3,10 @@ const choicebuttonsElement = document.getElementById('choice-buttons');
 
 let state = {};
 
-function startGame() {
-  state = {};
-  showTextNode(1);
-}
+function startGame() { state = {}; showTextNode(1); }
 
 function changeBackground(url) {
-  if (window.characterComponent) {
-    window.characterComponent.setBackground(url);
-  }
+  if (window.characterComponent) window.characterComponent.setBackground(url);
 }
 
 function showTextNode(textNodeIndex) {
@@ -24,9 +19,16 @@ function showTextNode(textNodeIndex) {
   if (window.characterComponent) {
     const coins = textNode.coins || [];
     window.characterComponent.resetCharacter(coins);
+
+    // Hide or show final score
+    if (textNode.isEnding) {
+      window.characterComponent.displayFinalScore();
+    } else {
+      window.characterComponent.hideFinalScore();
+    }
   }
 
-  // Hide container until all coins are collected
+  // Hide container until all coins collected
   if (textNode.coins && textNode.coins.length > 0) {
     container.style.display = 'none';
     const interval = setInterval(() => {
@@ -57,18 +59,19 @@ function showTextNode(textNodeIndex) {
   });
 }
 
-function showOption(option) {
-  return option.requiredState == null || option.requiredState(state);
-}
+function showOption(option) { return option.requiredState == null || option.requiredState(state); }
 
 function selectOption(option) {
   const nextTextNodeId = option.nextText;
-  if (nextTextNodeId <= 0) return startGame();
+  if (nextTextNodeId <= 0) {
+    if (window.characterComponent) window.characterComponent.resetCharacter([], true); // Reset coins and score
+    return startGame();
+  }
   state = Object.assign(state, option.setState);
   showTextNode(nextTextNodeId);
 }
 
-// images for textNodes
+// Import your assets
 import forestImg from './assets/pexels-lum3n-44775-167698.jpg';
 import foggyImg from './assets/foggy-autumn-forest-thick-forest-fall-aesthetic-nature.jpg';
 import coinImg from './assets/coin.png';
@@ -464,6 +467,7 @@ const textNodes = [
   {
     id: 27,
     text: 'You emerge once more at the forest`s edge. The sun sits exactly where it was when you began—no time has passed, though the faint chill on your skin insists something has changed.',
+    isEnding: true,
     options: [
       {
         text: 'Restart',
@@ -474,6 +478,7 @@ const textNodes = [
   {
     id: 28,
     text: 'The world narrows around you, walls of the forest closing in. No matter how you struggle or call for help, the path out seems to vanish. Slowly, you realize the place has claimed you. You are trapped, and there is no escape.',
+    isEnding: true,
     options: [
       {
         text: 'Restart',
@@ -484,6 +489,7 @@ const textNodes = [
   {
     id: 29,
     text: 'Deep within the forest`s secret places, you uncover a long-lost treasure. When you finally return home, word of your discovery spreads, and you are celebrated as a hero.',
+    isEnding: true,
     options: [
       {
         text: 'Restart',
@@ -494,6 +500,7 @@ const textNodes = [
   {
     id: 30,
     text: 'You step out of the forest and come across a quiet village where you settle down for the night.',
+    isEnding: true,
     options: [
       {
         text: 'Restart',
