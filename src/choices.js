@@ -1,78 +1,64 @@
-const textElement = document.getElementById('text');
-const choicebuttonsElement = document.getElementById('choice-buttons');
+const textElement = document.getElementById("text");
+const choiceButtons = document.getElementById("choice-buttons");
+const container = document.querySelector(".container");
 
 let state = {};
 
-function startGame() { state = {}; showTextNode(1); }
-
-function changeBackground(url) {
-  if (window.characterComponent) window.characterComponent.setBackground(url);
+function startGame() {
+  state = {};
+  window.characterComponent?.resetScore();
+  showTextNode(1);
 }
 
-function showTextNode(textNodeIndex) {
-  const textNode = textNodes.find(t => t.id === textNodeIndex);
-  textElement.innerText = textNode.text;
+function showTextNode(id) {
+  const node = textNodes.find(n => n.id === id);
+  textElement.innerText = node.text || "";
 
-  const container = document.querySelector('.container');
+if (window.characterComponent) {
+  window.characterComponent.resetCharacter(node.coins || []);
+  window.characterComponent.setObstacles(node.obstacles || []);
+  if (node.background) window.characterComponent.setBackground(node.background);
 
-  // Reset character and coins
-  if (window.characterComponent) {
-    const coins = textNode.coins || [];
-    window.characterComponent.resetCharacter(coins);
-
-    // Hide or show final score
-    if (textNode.isEnding) {
-      window.characterComponent.displayFinalScore();
-    } else {
-      window.characterComponent.hideFinalScore();
-    }
+  // Show final score if this is an ending
+  if (node.isEnding) {
+    window.characterComponent.showFinalScore();
+  } else {
+    window.characterComponent.hideFinalScore();
   }
+}
 
-  // Hide container until all coins collected
-  if (textNode.coins && textNode.coins.length > 0) {
-    container.style.display = 'none';
-    const interval = setInterval(() => {
+
+  // Show container if no coins OR if this is an ending node
+  if ((node.coins && node.coins.length) && !node.isEnding) {
+    container.style.display = "none";
+    const wait = setInterval(() => {
       if (window.characterComponent.allCoinsCollected) {
-        container.style.display = 'block';
-        clearInterval(interval);
+        container.style.display = "block";
+        clearInterval(wait);
       }
     }, 100);
   } else {
-    container.style.display = 'block';
+    container.style.display = "block";
   }
 
-  // Change background
-  if (textNode.background) changeBackground(textNode.background);
-
-  // Render options
-  while (choicebuttonsElement.firstChild) choicebuttonsElement.removeChild(choicebuttonsElement.firstChild);
-
-  const options = textNode.options || [];
-  options.forEach(option => {
-    if (showOption(option)) {
-      const button = document.createElement('button');
-      button.innerText = option.text;
-      button.classList.add('button');
-      button.addEventListener('click', () => selectOption(option));
-      choicebuttonsElement.appendChild(button);
-    }
+  choiceButtons.innerHTML = "";
+  (node.options || []).forEach(opt => {
+    const btn = document.createElement("button");
+    btn.textContent = opt.text;
+    btn.onclick = () => selectOption(opt);
+    choiceButtons.appendChild(btn);
   });
 }
 
-function showOption(option) { return option.requiredState == null || option.requiredState(state); }
 
 function selectOption(option) {
-  const nextTextNodeId = option.nextText;
-  if (nextTextNodeId <= 0) {
-    if (window.characterComponent) window.characterComponent.resetCharacter([], true); // Reset coins and score
-    return startGame();
-  }
-  state = Object.assign(state, option.setState);
-  showTextNode(nextTextNodeId);
+  if (option.nextText <= 0) return startGame();
+  state = Object.assign(state, option.setState || {});
+  showTextNode(option.nextText);
 }
 
 // Import your assets
-import forestImg from './assets/pexels-lum3n-44775-167698.jpg';
+import grassImg from './assets/grass.png';
 import foggyImg from './assets/foggy-autumn-forest-thick-forest-fall-aesthetic-nature.jpg';
 import coinImg from './assets/coin.png';
 
@@ -80,7 +66,7 @@ const textNodes = [
   {
     id: 1,
     text: '',
-    background: forestImg,
+    background: grassImg,
     coins: [
       { x: 300, y: 400 },
       { x: 500, y: 60 }
@@ -95,7 +81,7 @@ const textNodes = [
   {
     id: 2,
     text: 'You stand at the edge of a mysterious forest. The sun is setting, and a cool mist curls around the trees.',
-    background: foggyImg,
+    background: grassImg,
     options: [
       {
         text: 'Enter the forest cautiously',
@@ -110,7 +96,7 @@ const textNodes = [
   {
     id: 3,
     text: 'The forest is dense, and shadows loom. You hear a rustle nearby.',
-    background: foggyImg,
+    background: grassImg,
     options: [
       {
         text: 'Investigate the sound',
@@ -125,7 +111,7 @@ const textNodes = [
   {
     id: 4,
     text: 'Walking along the forest edge, you find a small, abandoned cabin.',
-    background: foggyImg,
+    background: grassImg,
     options: [
       {
         text: 'Enter the cabin',
@@ -140,7 +126,7 @@ const textNodes = [
   {
     id: 5,
     text: 'You discover a glowing blue mushroom surrounded by strange footprints.',
-    background: foggyImg,
+    background: grassImg,
     options: [
       {
         text: 'Pick the mushroom',
@@ -194,7 +180,7 @@ const textNodes = [
   {
     id: 8,
     text: 'As you walk past the cabin, the forest thins, and the trees become more scattered. A narrow dirt road appears ahead, winding toward the horizon.',
-    background: foggyImg,
+    background: grassImg,
     options: [
       {
         text: 'Go into the forest',
@@ -209,7 +195,7 @@ const textNodes = [
   {
     id: 9,
     text: 'As you pick the mushroom, the forest seems to shift. Colors swirl, and you feel dizzy.',
-    background: foggyImg,
+    background: grassImg,
     options: [
       {
         text: 'Keep walking',
@@ -224,7 +210,7 @@ const textNodes = [
   {
     id: 10,
     text: 'You ignore the mushroom. A hidden path opens to your left, leading deeper into the forest.',
-    background: foggyImg,
+    background: grassImg,
     options: [
       {
         text: 'Take the path',
@@ -254,7 +240,7 @@ const textNodes = [
   {
     id: 12,
     text: 'The map shows a hidden clearing. Following it, you find… a glowing sword stuck in a stone!',
-    background: foggyImg,
+    background: grassImg,
     options: [
       {
         text: 'You head toward the forest`s edge, keeping distance from the cave.',
@@ -265,7 +251,7 @@ const textNodes = [
   {
     id: 13,
     text: 'When you take the map, the symbols begin to glow faintly, revealing a hidden path deep within the forest.',
-    background: foggyImg,
+    background: grassImg,
     options: [
       {
         text: 'Stay on the main path',
@@ -295,7 +281,7 @@ const textNodes = [
   {
     id: 15,
     text: 'In the forest, you come across two paths: one continues along the trail, the other crosses a bridge.',
-    background: foggyImg,
+    background: grassImg,
     options: [
       {
         text: 'Continue on the trail',
@@ -310,7 +296,7 @@ const textNodes = [
   {
     id: 16,
     text: 'He trees gradually give way to an open field. Sunlight spills across the grass, and the sounds of the forest fade to birdsong and wind.',
-    background: foggyImg,
+    background: grassImg,
     options: [
       {
         text: 'Explore the field',
@@ -325,7 +311,7 @@ const textNodes = [
   {
     id: 17,
     text: 'The trees stretch impossibly tall, their bark shimmering with blue-veined light. The ground softens under your feet, springy like moss yet warm like skin. Ahead, a narrow path glows faintly, leading deeper into the forest`s heart.',
-    background: foggyImg,
+    background: grassImg,
     options: [
       {
         text: 'Ignore the glowing path',
@@ -340,7 +326,7 @@ const textNodes = [
   {
     id: 18,
     text: 'You sink to the forest floor, letting the dizziness wash over you. The colors settle into a slow hypnotic pulse, then fade entirely. In the quiet that follows, the footprints beside you begin to glow.',
-    background: foggyImg,
+    background: grassImg,
     options: [
       {
         text: 'Follow the glowing footprints',
@@ -381,7 +367,7 @@ const textNodes = [
   {
     id: 21,
     text: 'The path opens into a clearing with a circle of standing stones that hum softly. Strange symbols glow on their surfaces, and the air inside feels charged.',
-    background: foggyImg,
+    background: grassImg,
     options: [
       {
         text: 'Step inside of the circle of stones',
@@ -396,7 +382,7 @@ const textNodes = [
   {
     id: 22,
     text: 'As you trace the strange symbols with your fingers, the letters rearrange themselves into a pattern you can almost understand. Faint whispers rise from the forest.',
-    background: foggyImg,
+    background: grassImg,
     options: [
       {
         text: 'Follow the voices into the forest',
@@ -411,7 +397,7 @@ const textNodes = [
   {
     id: 23,
     text: 'You step onto the bridge, and it creaks under your weight. Some of the wooden planks wobble dangerously, and a few snap with a sharp crack.',
-    background: foggyImg,
+    background: grassImg,
     options: [
       {
         text: 'Run across',
@@ -426,7 +412,7 @@ const textNodes = [
   {
     id: 24,
     text: 'You step into the open grass, curious what might lie ahead. Perhaps there`s something hidden in the tall blades or a path leading further.',
-    background: foggyImg,
+    background: grassImg,
     options: [
       {
         text: 'Search for hidden objects in the grass',
@@ -441,7 +427,7 @@ const textNodes = [
   {
     id: 25,
     text: 'You spot a tree filled with birds. In front of the tree there`s a sign with two directions: into the forest or out of the forest.',
-    background: foggyImg,
+    background: grassImg,
     options: [
       {
         text: 'Step into the forest',
