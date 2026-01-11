@@ -1,12 +1,9 @@
 <template>
   <div class="game-container">
-    <div
-      ref="gameArea"
-      class="game-area"
-      :style="{ backgroundImage: `url(${backgroundImg})` }"
-    >
-      <!-- Score -->
-      <div class="score">Score: {{ score }}</div>
+    <!-- Score outside of game area -->
+    <div class="score">Score: {{ score }}</div>
+
+    <div ref="gameArea" class="game-area" :style="{ backgroundImage: `url(${backgroundImg})` }">
 
       <!-- Floating +1 -->
       <div
@@ -66,6 +63,10 @@ import IdleSprite from "../assets/SpriteIdle.png";
 import RunSprite from "../assets/SpriteRun.png";
 import CoinImg from "../assets/coin.png";
 
+import CoinSound from "../assets/collect.mp3";
+import FootstepSound from "../assets/footsteps.mp3";
+import BgMusic from "../assets/bgMusic.mp3";
+
 const DESIGN_WIDTH = 1800;
 const DESIGN_HEIGHT = 550;
 let floatingId = 0;
@@ -97,7 +98,13 @@ export default {
       floatingScores: [],
       allCoinsCollected: true,
 
-      finalScore: null, // new property for final score
+      finalScore: null,
+
+      // Audio placeholders
+      bgMusic: null,
+      coinAudio: null,
+      footstepAudio: null,
+      isFootstepPlaying: false
     };
   },
 
@@ -107,22 +114,46 @@ export default {
     scaledX() { return this.x * this.scaleX; },
     scaledY() { return this.y * this.scaleY; },
 
-    // Sprite switching logic
     characterImg() {
       return this.isMoving ? this.runSprite : this.idleSprite;
     }
   },
 
   mounted() {
-    this.updateGameAreaSize();
+  this.updateGameAreaSize();
 
-    window.addEventListener("keydown", e => this.keysPressed[e.key] = true);
-    window.addEventListener("keyup", e => this.keysPressed[e.key] = false);
-    window.addEventListener("resize", this.updateGameAreaSize);
+  // Initialize audio
+  this.coinAudio = new Audio(CoinSound);
+  this.coinAudio.volume = 0.2;
 
-    this.gameLoop();
-    window.characterComponent = this;
-  },
+  this.footstepAudio = new Audio(FootstepSound);
+  this.footstepAudio.volume = 0.5;
+  this.footstepAudio.loop = true;
+
+  this.bgMusic = new Audio(BgMusic);
+  this.bgMusic.volume = 0.02;
+  this.bgMusic.loop = true;
+
+  // Start background music on first user interaction
+  const startBgMusic = () => {
+    this.bgMusic.play().catch(() => console.log("Background music play blocked"));
+    window.removeEventListener("keydown", startBgMusic);
+    window.removeEventListener("mousedown", startBgMusic);
+    window.removeEventListener("touchstart", startBgMusic);
+  };
+
+  window.addEventListener("keydown", startBgMusic);
+  window.addEventListener("mousedown", startBgMusic);
+  window.addEventListener("touchstart", startBgMusic);
+
+  window.addEventListener("keydown", e => this.keysPressed[e.key] = true);
+  window.addEventListener("keyup", e => this.keysPressed[e.key] = false);
+  window.addEventListener("resize", this.updateGameAreaSize);
+
+  this.gameLoop();
+  window.characterComponent = this;
+},
+
 
   methods: {
     updateGameAreaSize() {
@@ -142,13 +173,25 @@ export default {
         let nextY = this.y;
         let moved = false;
 
-        if (this.keysPressed["a"]) { nextX -= speed; this.facing = "left"; moved = true; }
-        if (this.keysPressed["d"]) { nextX += speed; this.facing = "right"; moved = true; }
-        if (this.keysPressed["w"]) { nextY += speed; moved = true; }
-        if (this.keysPressed["s"]) { nextY -= speed; moved = true; }
+        // Movement keys
+        if (this.keysPressed["a"] || this.keysPressed["ArrowLeft"]) { nextX -= speed; this.facing = "left"; moved = true; }
+        if (this.keysPressed["d"] || this.keysPressed["ArrowRight"]) { nextX += speed; this.facing = "right"; moved = true; }
+        if (this.keysPressed["w"] || this.keysPressed["ArrowUp"]) { nextY += speed; moved = true; }
+        if (this.keysPressed["s"] || this.keysPressed["ArrowDown"]) { nextY -= speed; moved = true; }
 
         this.isMoving = moved;
 
+        // Footsteps audio
+        if (this.isMoving && !this.isFootstepPlaying) {
+          this.isFootstepPlaying = true;
+          this.footstepAudio.currentTime = 3;
+          this.footstepAudio.play();
+        } else if (!this.isMoving && this.isFootstepPlaying) {
+          this.isFootstepPlaying = false;
+          this.footstepAudio.pause();
+        }
+
+        // Keep character inside bounds
         nextX = Math.max(0, Math.min(nextX, DESIGN_WIDTH - this.characterWidth));
         nextY = Math.max(0, Math.min(nextY, DESIGN_HEIGHT - this.characterHeight));
 
@@ -177,13 +220,15 @@ export default {
           this.y + this.characterHeight < c.y ||
           this.y > c.y + 30
         );
-
         if (hit) {
           this.score++;
           this.floatingScores.push({ id: floatingId++, x: c.x, y: c.y, opacity: 1 });
+          this.coinAudio.currentTime = 0;
+          this.coinAudio.play();
         }
         return !hit;
       });
+
       this.allCoinsCollected = this.coins.length === 0;
     },
 
@@ -222,7 +267,7 @@ export default {
 .game-area {
   width: 100%;
   max-width: 1800px;
-  height: 50vw;
+  height: 45vw;
   max-height: 550px;
   position: relative;
   top: -50px;
@@ -231,12 +276,36 @@ export default {
   overflow: hidden;
 }
 
-.character { position: absolute; width: 100px; }
-.coin { position: absolute; width: 30px; }
-.obstacle { position: absolute; pointer-events: none; }
-.score { position: absolute; top: 10px; right: 20px; font-weight: bold; font-size: 18px; }
-.floating-score { position: absolute; font-weight: bold; color: white; }
+.character { 
+  position: absolute; 
+  width: 100px; 
+}
 
+.coin { 
+  position: absolute; 
+  width: 30px; 
+}
+
+.obstacle { 
+  position: absolute; 
+  pointer-events: none; 
+}
+
+.score { 
+  position: absolute;
+  top: 30px;
+  right: 50px;
+  font-weight: bold;
+  font-size: 18px;
+  color: white;
+  z-index: 100; 
+}
+
+.floating-score { 
+  position: absolute; 
+  font-weight: bold; 
+  color: white; 
+}
 
 .final-score {
   position: absolute;

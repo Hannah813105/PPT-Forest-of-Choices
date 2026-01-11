@@ -10,40 +10,65 @@ function startGame() {
   showTextNode(1);
 }
 
-function showTextNode(id) {
-  const node = textNodes.find(n => n.id === id);
-  textElement.innerText = node.text || "";
 
-if (window.characterComponent) {
-  window.characterComponent.resetCharacter(node.coins || []);
-  window.characterComponent.setObstacles(node.obstacles || []);
-  if (node.background) window.characterComponent.setBackground(node.background);
+let typingInterval = null;
 
-  // Show final score if this is an ending
-  if (node.isEnding) {
-    window.characterComponent.showFinalScore();
-  } else {
-    window.characterComponent.hideFinalScore();
+function typeText(text = "", speed = 30) {
+  if (typingInterval) clearInterval(typingInterval);
+
+  if (!text) {
+    textElement.innerText = "";
+    typingInterval = null;
+    return;
   }
+
+  textElement.innerText = "";
+  let index = 0;
+
+  typingInterval = setInterval(() => {
+    textElement.innerText += text[index];
+    index++;
+
+    if (index >= text.length) {
+      clearInterval(typingInterval);
+      typingInterval = null;
+    }
+  }, speed);
 }
 
+function showTextNode(id) {
+  const node = textNodes.find(n => n.id === id);
+  typeText(node.text || "");
 
-  // Show container if no coins OR if this is an ending node
-  if ((node.coins && node.coins.length) && !node.isEnding) {
-    container.style.display = "none";
-    const wait = setInterval(() => {
-      if (window.characterComponent.allCoinsCollected) {
-        container.style.display = "block";
-        clearInterval(wait);
-      }
-    }, 100);
-  } else {
-    container.style.display = "block";
+  // Update character component
+  if (window.characterComponent) {
+    window.characterComponent.resetCharacter(node.coins || []);
+    if (node.background) window.characterComponent.setBackground(node.background);
+    window.characterComponent.setObstacles(node.obstacles || []);
+
+    // Show final score if ending
+    if (node.isEnding) {
+      window.characterComponent.showFinalScore();
+    } else {
+      window.characterComponent.hideFinalScore();
+    }
   }
 
+  // Update options
   choiceButtons.innerHTML = "";
-  (node.options || []).forEach(opt => {
+  const visibleOptions = (node.options || []).filter(opt => {
+    return !opt.requiredState || opt.requiredState(state);
+  });
+
+  if (visibleOptions.length === 1) {
+    choiceButtons.classList.add("single-option");
+  } else {
+    choiceButtons.classList.remove("single-option");
+  }
+
+  visibleOptions.forEach(opt => {
     const btn = document.createElement("button");
+    btn.classList.add("button");
     btn.textContent = opt.text;
     btn.onclick = () => selectOption(opt);
     choiceButtons.appendChild(btn);
@@ -141,7 +166,7 @@ const textNodes = [
   },
   {
     id: 6,
-    text: 'The trees grow darker. Suddenly, a hidden trap door opens beneath your feet!You find yourself in an underground cave.',
+    text: 'The trees grow darker. Suddenly, a hidden trap door opens beneath your feet! You find yourself in an underground cave.',
     background: foggyImg,
     options: [
       {
