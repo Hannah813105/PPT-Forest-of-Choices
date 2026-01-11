@@ -37,6 +37,14 @@ import Character from './components/character.vue';
   background-repeat: no-repeat;
 }
 
+#foc::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: rgba(41, 89, 34, 0.316);
+  pointer-events: none;
+}
+
 .text-container {
   width: 100%;
   max-width: 3000px;
@@ -68,7 +76,7 @@ import Character from './components/character.vue';
     bottom: 5%;
     left: 5%;
     right: 5%;
-    background-color: rgba(22, 21, 77, 0.474);
+    background-color: rgba(22, 21, 77, 0.647);
     padding: 15px 20px 40px;
     border-radius: 10px;
     box-shadow: 0 5px 10px 0.5px rgba(47, 100, 44, 0.582);

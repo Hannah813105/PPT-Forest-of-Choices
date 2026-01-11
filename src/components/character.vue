@@ -236,21 +236,22 @@ export default {
     },
 
     collides(nx, ny) {
-      return this.obstacles.some(o => {
-        const colW = o.collisionWidth ?? o.width;
-        const colH = o.collisionHeight ?? o.height;
+    return this.obstacles.some(o => {
+    const colW = o.collisionWidth ?? o.width;
+    const colH = o.collisionHeight ?? o.height;
 
-        const colX = o.x + (o.width - colW) / 2;
-        const colY = o.y;
+    const colX = o.x + (o.width - colW) / 2; // center collision
+    const colY = o.y; // bottom-aligned
 
-        return !(
-          nx + this.characterWidth < colX ||
-          nx > colX + colW ||
-          ny + this.characterHeight < colY ||
-          ny > colY + colH
-        );
-      });
-    },
+    // collision check
+    return !(
+      nx + this.characterWidth < colX ||
+      nx > colX + colW ||
+      ny + this.characterHeight < colY ||
+      ny > colY + colH
+    );
+    });
+  },
 
     isCharacterBehindObstacle(obs) {
       const charFeetY = this.y;
@@ -367,7 +368,7 @@ export default {
 
 .score {
   position: absolute;
-  top: 30px;
+  top: 25px;
   right: 50px;
   font-weight: bold;
   font-size: 18px;
