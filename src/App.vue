@@ -57,6 +57,7 @@ import Character from './components/character.vue';
   position: fixed;
   font-size: 32px;
   color: white;
+  text-shadow: 2px 2px 6px black;
   text-align: left;
   top: 5px;
   left: 5%;
@@ -81,6 +82,7 @@ import Character from './components/character.vue';
   }
 
   .button-grid.single-option {
-  grid-template-columns: 1fr;
+  grid-template-columns: 600px;
+  justify-content: center;
   }
 </style>

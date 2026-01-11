@@ -1,16 +1,23 @@
 <template>
   <div class="game-container">
-    <!-- Score outside of game area -->
+    <!-- Score outside game -->
     <div class="score">Score: {{ score }}</div>
 
-    <div ref="gameArea" class="game-area" :style="{ backgroundImage: `url(${backgroundImg})` }">
-
-      <!-- Floating +1 -->
+    <div
+      ref="gameArea"
+      class="game-area"
+      :style="{ backgroundImage: `url(${backgroundImg})` }"
+    >
+      <!-- Floating scores -->
       <div
         v-for="fs in floatingScores"
         :key="fs.id"
         class="floating-score"
-        :style="{ left: scalePosX(fs.x)+'px', bottom: scalePosY(fs.y)+'px', opacity: fs.opacity }"
+        :style="{
+          left: scalePosX(fs.x) + 'px',
+          bottom: scalePosY(fs.y) + 'px',
+          opacity: fs.opacity
+        }"
       >
         +1
       </div>
@@ -25,7 +32,10 @@
           left: scalePosX(obs.x) + 'px',
           bottom: scalePosY(obs.y) + 'px',
           width: scalePosX(obs.width) + 'px',
-          height: scalePosY(obs.height) + 'px'
+          height: scalePosY(obs.height) + 'px',
+          opacity: isCharacterBehindObstacle(obs) ? 0.4 : 1,
+          zIndex: isCharacterBehindObstacle(obs) ? 200 : 600,
+          transition: 'opacity 0.2s ease, z-index 0.1s ease'
         }"
       />
 
@@ -35,7 +45,10 @@
         :key="i"
         class="coin"
         :src="coinImg"
-        :style="{ left: scalePosX(coin.x)+'px', bottom: scalePosY(coin.y)+'px' }"
+        :style="{
+          left: scalePosX(coin.x) + 'px',
+          bottom: scalePosY(coin.y) + 'px'
+        }"
       />
 
       <!-- Character -->
@@ -46,11 +59,13 @@
         :style="{
           left: scaledX + 'px',
           bottom: scaledY + 'px',
-          transform: facing === 'left' ? 'scaleX(-1)' : 'scaleX(1)'
+          transform: facing === 'left' ? 'scaleX(-1)' : 'scaleX(1)',
+          zIndex: 500
         }"
       />
 
-      <!-- Final Score Display -->
+
+      <!-- Final score -->
       <div v-if="finalScore !== null" class="final-score">
         Final Score: {{ finalScore }}
       </div>
@@ -100,7 +115,6 @@ export default {
 
       finalScore: null,
 
-      // Audio placeholders
       bgMusic: null,
       coinAudio: null,
       footstepAudio: null,
@@ -109,51 +123,53 @@ export default {
   },
 
   computed: {
-    scaleX() { return this.gameAreaWidth / DESIGN_WIDTH; },
-    scaleY() { return this.gameAreaHeight / DESIGN_HEIGHT; },
-    scaledX() { return this.x * this.scaleX; },
-    scaledY() { return this.y * this.scaleY; },
-
+    scaleX() {
+      return this.gameAreaWidth / DESIGN_WIDTH;
+    },
+    scaleY() {
+      return this.gameAreaHeight / DESIGN_HEIGHT;
+    },
+    scaledX() {
+      return this.x * this.scaleX;
+    },
+    scaledY() {
+      return this.y * this.scaleY;
+    },
     characterImg() {
       return this.isMoving ? this.runSprite : this.idleSprite;
     }
   },
 
   mounted() {
-  this.updateGameAreaSize();
+    this.updateGameAreaSize();
 
-  // Initialize audio
-  this.coinAudio = new Audio(CoinSound);
-  this.coinAudio.volume = 0.2;
+    this.coinAudio = new Audio(CoinSound);
+    this.coinAudio.volume = 0.2;
 
-  this.footstepAudio = new Audio(FootstepSound);
-  this.footstepAudio.volume = 0.5;
-  this.footstepAudio.loop = true;
+    this.footstepAudio = new Audio(FootstepSound);
+    this.footstepAudio.volume = 0.5;
+    this.footstepAudio.loop = true;
 
-  this.bgMusic = new Audio(BgMusic);
-  this.bgMusic.volume = 0.02;
-  this.bgMusic.loop = true;
+    this.bgMusic = new Audio(BgMusic);
+    this.bgMusic.volume = 0.03;
+    this.bgMusic.loop = true;
 
-  // Start background music on first user interaction
-  const startBgMusic = () => {
-    this.bgMusic.play().catch(() => console.log("Background music play blocked"));
-    window.removeEventListener("keydown", startBgMusic);
-    window.removeEventListener("mousedown", startBgMusic);
-    window.removeEventListener("touchstart", startBgMusic);
-  };
+    const startBgMusic = () => {
+      this.bgMusic.play().catch(() => {});
+      window.removeEventListener("keydown", startBgMusic);
+      window.removeEventListener("mousedown", startBgMusic);
+    };
 
-  window.addEventListener("keydown", startBgMusic);
-  window.addEventListener("mousedown", startBgMusic);
-  window.addEventListener("touchstart", startBgMusic);
+    window.addEventListener("keydown", startBgMusic);
+    window.addEventListener("mousedown", startBgMusic);
 
-  window.addEventListener("keydown", e => this.keysPressed[e.key] = true);
-  window.addEventListener("keyup", e => this.keysPressed[e.key] = false);
-  window.addEventListener("resize", this.updateGameAreaSize);
+    window.addEventListener("keydown", e => (this.keysPressed[e.key] = true));
+    window.addEventListener("keyup", e => (this.keysPressed[e.key] = false));
+    window.addEventListener("resize", this.updateGameAreaSize);
 
-  this.gameLoop();
-  window.characterComponent = this;
-},
-
+    this.gameLoop();
+    window.characterComponent = this;
+  },
 
   methods: {
     updateGameAreaSize() {
@@ -162,8 +178,12 @@ export default {
       this.gameAreaHeight = rect.height;
     },
 
-    scalePosX(v) { return v * this.scaleX; },
-    scalePosY(v) { return v * this.scaleY; },
+    scalePosX(v) {
+      return v * this.scaleX;
+    },
+    scalePosY(v) {
+      return v * this.scaleY;
+    },
 
     gameLoop() {
       setInterval(() => {
@@ -173,25 +193,37 @@ export default {
         let nextY = this.y;
         let moved = false;
 
-        // Movement keys
-        if (this.keysPressed["a"] || this.keysPressed["ArrowLeft"]) { nextX -= speed; this.facing = "left"; moved = true; }
-        if (this.keysPressed["d"] || this.keysPressed["ArrowRight"]) { nextX += speed; this.facing = "right"; moved = true; }
-        if (this.keysPressed["w"] || this.keysPressed["ArrowUp"]) { nextY += speed; moved = true; }
-        if (this.keysPressed["s"] || this.keysPressed["ArrowDown"]) { nextY -= speed; moved = true; }
+        if (this.keysPressed.a || this.keysPressed.ArrowLeft) {
+          nextX -= speed;
+          this.facing = "left";
+          moved = true;
+        }
+        if (this.keysPressed.d || this.keysPressed.ArrowRight) {
+          nextX += speed;
+          this.facing = "right";
+          moved = true;
+        }
+        if (this.keysPressed.w || this.keysPressed.ArrowUp) {
+          nextY += speed;
+          moved = true;
+        }
+        if (this.keysPressed.s || this.keysPressed.ArrowDown) {
+          nextY -= speed;
+          moved = true;
+        }
 
         this.isMoving = moved;
 
-        // Footsteps audio
         if (this.isMoving && !this.isFootstepPlaying) {
           this.isFootstepPlaying = true;
           this.footstepAudio.currentTime = 3;
+          this.footstepAudio.playbackRate = 1.3;
           this.footstepAudio.play();
         } else if (!this.isMoving && this.isFootstepPlaying) {
           this.isFootstepPlaying = false;
           this.footstepAudio.pause();
         }
 
-        // Keep character inside bounds
         nextX = Math.max(0, Math.min(nextX, DESIGN_WIDTH - this.characterWidth));
         nextY = Math.max(0, Math.min(nextY, DESIGN_HEIGHT - this.characterHeight));
 
@@ -204,12 +236,34 @@ export default {
     },
 
     collides(nx, ny) {
-      return this.obstacles.some(o =>
-        !(nx + this.characterWidth < o.x ||
-          nx > o.x + o.width ||
-          ny + this.characterHeight < o.y ||
-          ny > o.y + o.height)
-      );
+      return this.obstacles.some(o => {
+        const colW = o.collisionWidth ?? o.width;
+        const colH = o.collisionHeight ?? o.height;
+
+        const colX = o.x + (o.width - colW) / 2;
+        const colY = o.y;
+
+        return !(
+          nx + this.characterWidth < colX ||
+          nx > colX + colW ||
+          ny + this.characterHeight < colY ||
+          ny > colY + colH
+        );
+      });
+    },
+
+    isCharacterBehindObstacle(obs) {
+      const charFeetY = this.y;
+
+      const charCenterX = this.x + this.characterWidth / 2;
+      const obsLeft = obs.x;
+      const obsRight = obs.x + obs.width;
+      const horizontalOverlap = charCenterX > obsLeft && charCenterX < obsRight;
+
+      const depthLineY =
+        obs.y + (obs.depthOffset ?? (obs.collisionHeight ?? obs.height) * 0.8);
+
+      return horizontalOverlap && charFeetY > depthLineY;
     },
 
     checkCoinCollision() {
@@ -220,9 +274,15 @@ export default {
           this.y + this.characterHeight < c.y ||
           this.y > c.y + 30
         );
+
         if (hit) {
           this.score++;
-          this.floatingScores.push({ id: floatingId++, x: c.x, y: c.y, opacity: 1 });
+          this.floatingScores.push({
+            id: floatingId++,
+            x: c.x,
+            y: c.y,
+            opacity: 1
+          });
           this.coinAudio.currentTime = 0;
           this.coinAudio.play();
         }
@@ -246,11 +306,22 @@ export default {
       this.isMoving = false;
     },
 
-    setObstacles(obs = []) { this.obstacles = obs; },
-    setBackground(url) { this.backgroundImg = url; },
-    resetScore() { this.score = 0; },
-    showFinalScore() { this.finalScore = this.score; },
-    hideFinalScore() { this.finalScore = null; }
+    setObstacles(obs = []) {
+      this.obstacles = obs;
+    },
+    setBackground(url) {
+      this.backgroundImg = url;
+    },
+    resetScore() {
+      this.score = 0;
+      this.finalScore = null;
+    },
+    showFinalScore() {
+      this.finalScore = this.score;
+    },
+    hideFinalScore() {
+      this.finalScore = null;
+    }
   }
 };
 </script>
@@ -269,6 +340,7 @@ export default {
   max-width: 1800px;
   height: 45vw;
   max-height: 550px;
+  margin: auto;
   position: relative;
   top: -50px;
   background-size: cover;
@@ -281,30 +353,36 @@ export default {
   width: 100px; 
 }
 
-.coin { 
-  position: absolute; 
-  width: 30px; 
+.coin {
+  position: absolute;
+  width: 30px;
+  z-index: 450;
 }
 
-.obstacle { 
-  position: absolute; 
-  pointer-events: none; 
+.obstacle {
+  position: absolute;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
 }
 
-.score { 
+.score {
   position: absolute;
   top: 30px;
   right: 50px;
   font-weight: bold;
   font-size: 18px;
   color: white;
-  z-index: 100; 
+  background: rgba(22, 21, 77, 0.5);
+  padding: 6px 12px;
+  border-radius: 6px;
+  z-index: 1000;
 }
 
-.floating-score { 
-  position: absolute; 
-  font-weight: bold; 
-  color: white; 
+.floating-score {
+  position: absolute;
+  color: white;
+  font-weight: bold;
+  z-index: 700;
 }
 
 .final-score {
@@ -315,6 +393,7 @@ export default {
   font-size: 3vw;
   font-weight: bold;
   color: white;
-  text-shadow: 2px 2px 4px black;
+  text-shadow: 2px 2px 6px black;
+  z-index: 2000;
 }
 </style>

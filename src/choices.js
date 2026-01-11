@@ -46,6 +46,19 @@ function showTextNode(id) {
     if (node.background) window.characterComponent.setBackground(node.background);
     window.characterComponent.setObstacles(node.obstacles || []);
 
+    if (node.coins && node.coins.length > 0 && !node.isEnding) {
+    container.style.display = "none"; // hide text/buttons
+    const wait = setInterval(() => {
+    if (window.characterComponent.allCoinsCollected) {
+      container.style.display = "block"; // show after all coins picked
+      clearInterval(wait);
+    }
+    }, 50);
+  } else {
+    container.style.display = "block"; // show immediately if no coins
+    }
+
+    
     // Show final score if ending
     if (node.isEnding) {
       window.characterComponent.showFinalScore();
@@ -75,7 +88,6 @@ function showTextNode(id) {
   });
 }
 
-
 function selectOption(option) {
   if (option.nextText <= 0) return startGame();
   state = Object.assign(state, option.setState || {});
@@ -86,12 +98,17 @@ function selectOption(option) {
 import grassImg from './assets/grass.png';
 import foggyImg from './assets/foggy-autumn-forest-thick-forest-fall-aesthetic-nature.jpg';
 import coinImg from './assets/coin.png';
+import treeImg from './assets/Tree.png';
 
 const textNodes = [
   {
     id: 1,
     text: '',
     background: grassImg,
+    obstacles: [
+      { x: 700, y: 300, width: 250, height: 230, collisionWidth: 150, collisionHeight: 40, image: treeImg, depthOffset: 40},
+      { x: 200, y: 200, width: 250, height: 230, collisionWidth: 150, collisionHeight: 40, image: treeImg, depthOffset: 40}
+    ],
     coins: [
       { x: 300, y: 400 },
       { x: 500, y: 60 }
