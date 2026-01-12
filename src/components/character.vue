@@ -349,6 +349,16 @@ export default {
   overflow: hidden;
 }
 
+.game-area::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: rgba(51, 6, 100, 0.311);
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  z-index: 900;
+}
+
 .character { 
   position: absolute; 
   width: 100px; 
