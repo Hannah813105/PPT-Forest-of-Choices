@@ -110,7 +110,7 @@ const textNodes = [
       { x: 200, y: 200, width: 250, height: 230, collisionWidth: 150, collisionHeight: 40, image: treeImg, depthOffset: 40}
     ],
     coins: [
-      { x: 300, y: 400 },
+      { x: 300, y: 380 },
       { x: 500, y: 60 }
     ],
     options: [
