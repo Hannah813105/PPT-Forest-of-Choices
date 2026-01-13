@@ -281,7 +281,7 @@ const textNodes = [
   },
   {
     id: 12,
-    text: 'The map shows a hidden clearing. Following it, you find… a glowing sword stuck in a stone!',
+    text: 'You climb up to the trapdoor`s opening, grab the edge, and pull yourself out.',
     background: grassImg,
     options: [
       {
