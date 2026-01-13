@@ -4,6 +4,8 @@ import Character from './components/character.vue';
 </script>
 
 <template>
+  <div id="viewport">
+  <div id="game-root">
   <section id="foc">
     <div id="background"></div>
     <h1 id="title">
@@ -22,6 +24,8 @@ import Character from './components/character.vue';
       </div>
     </div>
   </section>
+  </div>
+  </div>
 </template>
 
 <style scoped>
@@ -29,8 +33,8 @@ import Character from './components/character.vue';
   position: absolute;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   background-image: url('./assets/grass.png');
   background-size: cover;  
   background-position: center;
@@ -72,7 +76,7 @@ import Character from './components/character.vue';
   }
   
   .container {
-    position: fixed;
+    position: absolute;
     bottom: 5%;
     left: 5%;
     right: 5%;

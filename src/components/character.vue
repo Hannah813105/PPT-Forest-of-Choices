@@ -329,18 +329,17 @@ export default {
 
 <style scoped>
 .game-container {
-  position: fixed;
+  position: absolute;
   inset: 0;
+  top: 0;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .game-area {
-  width: 100%;
-  max-width: 1800px;
-  height: 45vw;
-  max-height: 550px;
+  width: 1440px;
+  height: 550px;
   margin: auto;
   position: relative;
   top: -50px;
@@ -379,7 +378,7 @@ export default {
 .score {
   position: absolute;
   top: 25px;
-  right: 50px;
+  right: 80px;
   font-weight: bold;
   font-size: 18px;
   color: white;
