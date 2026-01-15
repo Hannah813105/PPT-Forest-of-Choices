@@ -115,6 +115,7 @@ import town from './assets/town.png';
 import bridge from './assets/bridge.png';
 import inCabin from './assets/incabin.png';
 import stones from './assets/stones.png';
+import dizzy from './assets/forestdizzy.png';
 
 const textNodes = [
   {
@@ -253,7 +254,7 @@ const textNodes = [
   {
     id: 9,
     text: 'As you pick the mushroom, the forest seems to shift. Colors swirl, and you feel dizzy.',
-    background: grassImg,
+    background: dizzy,
     options: [
       {
         text: 'Keep walking',
@@ -369,7 +370,7 @@ const textNodes = [
   {
     id: 17,
     text: 'The trees stretch impossibly tall, their bark shimmering with blue-veined light. The ground softens under your feet, springy like moss yet warm like skin. Ahead, a narrow path glows faintly, leading deeper into the forest`s heart.',
-    background: grassImg,
+    background: dizzy,
     options: [
       {
         text: 'Ignore the glowing path',
