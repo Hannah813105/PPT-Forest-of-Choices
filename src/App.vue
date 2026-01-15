@@ -56,6 +56,7 @@ import Character from './components/character.vue';
   position: relative;
   left: 10px;
   bottom: 5px;
+  z-index: 1000;
   }
 
   #text {

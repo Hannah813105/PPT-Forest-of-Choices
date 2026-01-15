@@ -107,6 +107,12 @@ import mushroom from './assets/mushroom.png';
 import cave from './assets/cave.png';
 import cabin from './assets/cabin.png';
 import black from './assets/Black.png';
+import path from './assets/path.png';
+import forkedPath from './assets/forkedpath.png';
+import caveRiver from './assets/caveriver.png';
+import chest from './assets/chest.png';
+import town from './assets/town.png';
+import bridge from './assets/bridge.png';
 
 const textNodes = [
   {
@@ -230,7 +236,7 @@ const textNodes = [
   {
     id: 8,
     text: 'As you walk past the cabin, the forest thins, and the trees become more scattered. A narrow dirt road appears ahead, winding toward the horizon.',
-    background: grassImg,
+    background: path,
     options: [
       {
         text: 'Go into the forest',
@@ -260,7 +266,7 @@ const textNodes = [
   {
     id: 10,
     text: 'You ignore the mushroom. A hidden path opens to your left, leading deeper into the forest.',
-    background: grassImg,
+    background: path,
     options: [
       {
         text: 'Take the path',
@@ -275,7 +281,7 @@ const textNodes = [
   {
     id: 11,
     text: 'Within the cave system you spot an path leading further into the cave and a winding underground river.',
-    background: foggyImg,
+    background: caveRiver,
     options: [
       {
         text: 'Go further into cave',
@@ -290,7 +296,7 @@ const textNodes = [
   {
     id: 12,
     text: 'You climb up to the trapdoor`s opening, grab the edge, and pull yourself out.',
-    background: grassImg,
+    background: forestEdge,
     options: [
       {
         text: 'You head toward the forest`s edge, keeping distance from the cave.',
@@ -301,7 +307,7 @@ const textNodes = [
   {
     id: 13,
     text: 'When you take the map, the symbols begin to glow faintly, revealing a hidden path deep within the forest.',
-    background: grassImg,
+    background: path,
     options: [
       {
         text: 'Stay on the main path',
@@ -331,7 +337,7 @@ const textNodes = [
   {
     id: 15,
     text: 'In the forest, you come across two paths: one continues along the trail, the other crosses a bridge.',
-    background: grassImg,
+    background: forkedPath,
     options: [
       {
         text: 'Continue on the trail',
@@ -402,7 +408,7 @@ const textNodes = [
   {
     id: 20,
     text: 'Looking down into the flowing water, your eyes catch a gem sparkling.',
-    background: foggyImg,
+    background: caveRiver,
     options: [
       {
         text: 'Ignore the gem and find a way out',
@@ -447,7 +453,7 @@ const textNodes = [
   {
     id: 23,
     text: 'You step onto the bridge, and it creaks under your weight. Some of the wooden planks wobble dangerously, and a few snap with a sharp crack.',
-    background: grassImg,
+    background: bridge,
     options: [
       {
         text: 'Run across',
@@ -477,7 +483,7 @@ const textNodes = [
   {
     id: 25,
     text: 'You spot a tree filled with birds. In front of the tree there`s a sign with two directions: into the forest or out of the forest.',
-    background: grassImg,
+    background: forkedPath,
     options: [
       {
         text: 'Step into the forest',
@@ -492,7 +498,7 @@ const textNodes = [
   {
     id: 26,
     text: 'The map shifts and reveals a hidden treasure within the cave. Following it you find a chest filled with gems.',
-    background: foggyImg,
+    background: chest,
     options: [
       {
         text: 'Take the gems and find a way out',
@@ -504,6 +510,7 @@ const textNodes = [
     id: 27,
     text: 'You emerge once more at the forest`s edge. The sun sits exactly where it was when you began—no time has passed, though the faint chill on your skin insists something has changed.',
     isEnding: true,
+    background: forestEdge,
     options: [
       {
         text: 'Restart',
@@ -527,6 +534,7 @@ const textNodes = [
     id: 29,
     text: 'Deep within the forest`s secret places, you uncover a long-lost treasure. When you finally return home, word of your discovery spreads, and you are celebrated as a hero.',
     isEnding: true,
+    background: town,
     options: [
       {
         text: 'Restart',
@@ -538,6 +546,7 @@ const textNodes = [
     id: 30,
     text: 'You step out of the forest and come across a quiet village where you settle down for the night.',
     isEnding: true,
+    background: town,
     options: [
       {
         text: 'Restart',
@@ -548,6 +557,7 @@ const textNodes = [
   {
     id: 31,
     text: 'You fall into a cold and winding river. When getting up you notice that you are mostly unharmed',
+    background: caveRiver,
     options: [
       {
         text: 'Investigate the winding river',
