@@ -99,12 +99,14 @@ import grassImg from './assets/grass.png';
 import foggyImg from './assets/foggy-autumn-forest-thick-forest-fall-aesthetic-nature.jpg';
 import coinImg from './assets/coin.png';
 import treeImg from './assets/Tree.png';
-import opening from './assets/start.png';
+
+import opening from './assets/Start.png';
 import forestEdge from './assets/forestedge.png';
 import forest from './assets/forestmain.png';
 import mushroom from './assets/mushroom.png';
 import cave from './assets/cave.png';
 import cabin from './assets/cabin.png';
+import black from './assets/Black.png';
 
 const textNodes = [
   {
@@ -389,7 +391,7 @@ const textNodes = [
   {
     id: 19,
     text: 'A deep rumble shakes the cave as rocks crash down around you.',
-    background: foggyImg,
+    background: black,
     options: [
       {
         text: 'Accept your fate',
@@ -513,6 +515,7 @@ const textNodes = [
     id: 28,
     text: 'The world narrows around you, walls of the forest closing in. No matter how you struggle or call for help, the path out seems to vanish. Slowly, you realize the place has claimed you. You are trapped, and there is no escape.',
     isEnding: true,
+    background: black,
     options: [
       {
         text: 'Restart',
