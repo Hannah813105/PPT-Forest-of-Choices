@@ -113,6 +113,8 @@ import caveRiver from './assets/caveriver.png';
 import chest from './assets/chest.png';
 import town from './assets/town.png';
 import bridge from './assets/bridge.png';
+import inCabin from './assets/incabin.png';
+import stones from './assets/stones.png';
 
 const textNodes = [
   {
@@ -219,7 +221,7 @@ const textNodes = [
   {
     id: 7,
     text: 'The cabin is dusty but cozy. On the table is a mysterious old map, a book covered in moss.',
-    background: foggyImg,
+    background: inCabin,
     options: [
       {
         text: 'Take the map',
@@ -322,7 +324,7 @@ const textNodes = [
   {
     id: 14,
     text: 'When you take the book, the moss flakes away, revealing pages filled with strange symbols that seem to shift before your eyes.',
-    background: foggyImg,
+    background: inCabin,
     options: [
       {
         text: 'Examine the book and its symbols',
@@ -382,7 +384,7 @@ const textNodes = [
   {
     id: 18,
     text: 'You sink to the forest floor, letting the dizziness wash over you. The colors settle into a slow hypnotic pulse, then fade entirely. In the quiet that follows, the footprints beside you begin to glow.',
-    background: grassImg,
+    background: forest,
     options: [
       {
         text: 'Follow the glowing footprints',
@@ -423,7 +425,7 @@ const textNodes = [
   {
     id: 21,
     text: 'The path opens into a clearing with a circle of standing stones that hum softly. Strange symbols glow on their surfaces, and the air inside feels charged.',
-    background: grassImg,
+    background: stones,
     options: [
       {
         text: 'Step inside of the circle of stones',
@@ -437,8 +439,8 @@ const textNodes = [
   },
   {
     id: 22,
-    text: 'As you trace the strange symbols with your fingers, the letters rearrange themselves into a pattern you can almost understand. Faint whispers rise from the forest.',
-    background: grassImg,
+    text: 'As you trace the strange symbols with your fingers, the letters rearrange themselves into a pattern you can almost understand. You find yourself following a voice towards a circle of stones in the forest.',
+    background: stones,
     options: [
       {
         text: 'Follow the voices into the forest',
@@ -468,7 +470,7 @@ const textNodes = [
   {
     id: 24,
     text: 'You step into the open grass, curious what might lie ahead. Perhaps there`s something hidden in the tall blades or a path leading further.',
-    background: grassImg,
+    background: forestEdge,
     options: [
       {
         text: 'Search for hidden objects in the grass',
