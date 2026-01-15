@@ -352,7 +352,7 @@ export default {
   content: '';
   position: absolute;
   inset: 0;
-  background-color: rgba(51, 6, 100, 0.311);
+  background-color: rgba(51, 6, 100, 0.225);
   mix-blend-mode: multiply;
   pointer-events: none;
   z-index: 900;

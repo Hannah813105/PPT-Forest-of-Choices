@@ -99,12 +99,18 @@ import grassImg from './assets/grass.png';
 import foggyImg from './assets/foggy-autumn-forest-thick-forest-fall-aesthetic-nature.jpg';
 import coinImg from './assets/coin.png';
 import treeImg from './assets/Tree.png';
+import opening from './assets/start.png';
+import forestEdge from './assets/forestedge.png';
+import forest from './assets/forestmain.png';
+import mushroom from './assets/mushroom.png';
+import cave from './assets/cave.png';
+import cabin from './assets/cabin.png';
 
 const textNodes = [
   {
     id: 1,
     text: '',
-    background: grassImg,
+    background: opening,
     obstacles: [
       { x: 700, y: 300, width: 250, height: 230, collisionWidth: 150, collisionHeight: 40, image: treeImg, depthOffset: 40},
       { x: 200, y: 200, width: 250, height: 230, collisionWidth: 150, collisionHeight: 40, image: treeImg, depthOffset: 40}
@@ -123,7 +129,7 @@ const textNodes = [
   {
     id: 2,
     text: 'You stand at the edge of a mysterious forest. The sun is setting, and a cool mist curls around the trees.',
-    background: grassImg,
+    background: forestEdge,
     options: [
       {
         text: 'Enter the forest cautiously',
@@ -138,7 +144,7 @@ const textNodes = [
   {
     id: 3,
     text: 'The forest is dense, and shadows loom. You hear a rustle nearby.',
-    background: grassImg,
+    background: forest,
     options: [
       {
         text: 'Investigate the sound',
@@ -153,7 +159,7 @@ const textNodes = [
   {
     id: 4,
     text: 'Walking along the forest edge, you find a small, abandoned cabin.',
-    background: grassImg,
+    background: cabin,
     options: [
       {
         text: 'Enter the cabin',
@@ -168,7 +174,7 @@ const textNodes = [
   {
     id: 5,
     text: 'You discover a glowing blue mushroom surrounded by strange footprints.',
-    background: grassImg,
+    background: mushroom,
     options: [
       {
         text: 'Pick the mushroom',
@@ -184,7 +190,7 @@ const textNodes = [
   {
     id: 6,
     text: 'The trees grow darker. Suddenly, a hidden trap door opens beneath your feet! You find yourself in an underground cave.',
-    background: foggyImg,
+    background: cave,
     options: [
       {
         text: 'look on the map for a route in the cave system',
