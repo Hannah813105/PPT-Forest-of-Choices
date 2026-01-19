@@ -94,9 +94,7 @@ function selectOption(option) {
   showTextNode(option.nextText);
 }
 
-// Import your assets
 import grassImg from './assets/grass.png';
-import foggyImg from './assets/foggy-autumn-forest-thick-forest-fall-aesthetic-nature.jpg';
 import coinImg from './assets/coin.png';
 import treeImg from './assets/Tree.png';
 
@@ -141,6 +139,9 @@ const textNodes = [
     id: 2,
     text: 'You stand at the edge of a mysterious forest. The sun is setting, and a cool mist curls around the trees.',
     background: forestEdge,
+    coins: [
+      { x: 1200, y: 200 }
+    ],
     options: [
       {
         text: 'Enter the forest cautiously',
@@ -156,6 +157,9 @@ const textNodes = [
     id: 3,
     text: 'The forest is dense, and shadows loom. You hear a rustle nearby.',
     background: forest,
+    coins: [
+      { x: 500, y: 300 }
+    ],
     options: [
       {
         text: 'Investigate the sound',
@@ -171,6 +175,9 @@ const textNodes = [
     id: 4,
     text: 'Walking along the forest edge, you find a small, abandoned cabin.',
     background: cabin,
+    coins: [
+      { x: 1200, y: 60 }
+    ],
     options: [
       {
         text: 'Enter the cabin',
@@ -186,6 +193,9 @@ const textNodes = [
     id: 5,
     text: 'You discover a glowing blue mushroom surrounded by strange footprints.',
     background: mushroom,
+    coins: [
+      { x: 500, y: 60 }
+    ],
     options: [
       {
         text: 'Pick the mushroom',
@@ -223,6 +233,9 @@ const textNodes = [
     id: 7,
     text: 'The cabin is dusty but cozy. On the table is a mysterious old map, a book covered in moss.',
     background: inCabin,
+    coins: [
+      { x: 500, y: 60 }
+    ],
     options: [
       {
         text: 'Take the map',
@@ -240,6 +253,9 @@ const textNodes = [
     id: 8,
     text: 'As you walk past the cabin, the forest thins, and the trees become more scattered. A narrow dirt road appears ahead, winding toward the horizon.',
     background: path,
+    coins: [
+      { x: 800, y: 300 }
+    ],
     options: [
       {
         text: 'Go into the forest',
@@ -255,6 +271,9 @@ const textNodes = [
     id: 9,
     text: 'As you pick the mushroom, the forest seems to shift. Colors swirl, and you feel dizzy.',
     background: dizzy,
+    coins: [
+      { x: 500, y: 60 }
+    ],
     options: [
       {
         text: 'Keep walking',
@@ -270,6 +289,9 @@ const textNodes = [
     id: 10,
     text: 'You ignore the mushroom. A hidden path opens to your left, leading deeper into the forest.',
     background: path,
+    coins: [
+      { x: 500, y: 60 }
+    ],
     options: [
       {
         text: 'Take the path',
@@ -285,6 +307,9 @@ const textNodes = [
     id: 11,
     text: 'Within the cave system you spot an path leading further into the cave and a winding underground river.',
     background: caveRiver,
+    coins: [
+      { x: 200, y: 300 }
+    ],
     options: [
       {
         text: 'Go further into cave',
@@ -300,6 +325,9 @@ const textNodes = [
     id: 12,
     text: 'You climb up to the trapdoor`s opening, grab the edge, and pull yourself out.',
     background: forestEdge,
+    coins: [
+      { x: 500, y: 60 }
+    ],
     options: [
       {
         text: 'You head toward the forest`s edge, keeping distance from the cave.',
@@ -311,6 +339,9 @@ const textNodes = [
     id: 13,
     text: 'When you take the map, the symbols begin to glow faintly, revealing a hidden path deep within the forest.',
     background: path,
+    coins: [
+      { x: 800, y: 400 }
+    ],
     options: [
       {
         text: 'Stay on the main path',
@@ -326,6 +357,9 @@ const textNodes = [
     id: 14,
     text: 'When you take the book, the moss flakes away, revealing pages filled with strange symbols that seem to shift before your eyes.',
     background: inCabin,
+    coins: [
+      { x: 800, y: 400 }
+    ],
     options: [
       {
         text: 'Examine the book and its symbols',
@@ -341,6 +375,9 @@ const textNodes = [
     id: 15,
     text: 'In the forest, you come across two paths: one continues along the trail, the other crosses a bridge.',
     background: forkedPath,
+    coins: [
+      { x: 500, y: 400 }
+    ],
     options: [
       {
         text: 'Continue on the trail',
@@ -356,6 +393,9 @@ const textNodes = [
     id: 16,
     text: 'He trees gradually give way to an open field. Sunlight spills across the grass, and the sounds of the forest fade to birdsong and wind.',
     background: grassImg,
+    coins: [
+      { x: 500, y: 60 }
+    ],
     options: [
       {
         text: 'Explore the field',
@@ -386,6 +426,9 @@ const textNodes = [
     id: 18,
     text: 'You sink to the forest floor, letting the dizziness wash over you. The colors settle into a slow hypnotic pulse, then fade entirely. In the quiet that follows, the footprints beside you begin to glow.',
     background: forest,
+    coins: [
+      { x: 800, y: 300 }
+    ],
     options: [
       {
         text: 'Follow the glowing footprints',
@@ -412,6 +455,9 @@ const textNodes = [
     id: 20,
     text: 'Looking down into the flowing water, your eyes catch a gem sparkling.',
     background: caveRiver,
+    coins: [
+      { x: 800, y: 300 }
+    ],
     options: [
       {
         text: 'Ignore the gem and find a way out',
@@ -427,6 +473,9 @@ const textNodes = [
     id: 21,
     text: 'The path opens into a clearing with a circle of standing stones that hum softly. Strange symbols glow on their surfaces, and the air inside feels charged.',
     background: stones,
+    coins: [
+      { x: 500, y: 60 }
+    ],
     options: [
       {
         text: 'Step inside of the circle of stones',
@@ -442,6 +491,9 @@ const textNodes = [
     id: 22,
     text: 'As you trace the strange symbols with your fingers, the letters rearrange themselves into a pattern you can almost understand. You find yourself following a voice towards a circle of stones in the forest.',
     background: stones,
+    coins: [
+      { x: 500, y: 60 }
+    ],
     options: [
       {
         text: 'Follow the voices into the forest',
@@ -457,6 +509,9 @@ const textNodes = [
     id: 23,
     text: 'You step onto the bridge, and it creaks under your weight. Some of the wooden planks wobble dangerously, and a few snap with a sharp crack.',
     background: bridge,
+    coins: [
+      { x: 500, y: 60 }
+    ],
     options: [
       {
         text: 'Run across',
@@ -472,6 +527,9 @@ const textNodes = [
     id: 24,
     text: 'You step into the open grass, curious what might lie ahead. Perhaps there`s something hidden in the tall blades or a path leading further.',
     background: forestEdge,
+    coins: [
+      { x: 500, y: 60 }
+    ],
     options: [
       {
         text: 'Search for hidden objects in the grass',
@@ -487,6 +545,9 @@ const textNodes = [
     id: 25,
     text: 'You spot a tree filled with birds. In front of the tree there`s a sign with two directions: into the forest or out of the forest.',
     background: forkedPath,
+    coins: [
+      { x: 500, y: 60 }
+    ],
     options: [
       {
         text: 'Step into the forest',
